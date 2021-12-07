@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 # The Spark Challenge Fall 2021
 # Student Check-In Validation and Tracking
@@ -42,10 +42,10 @@ def initialize():
     # Load visit transcript file - populate student dictionary
     with open(VISITATION_LOG_FILE, 'r') as myFile:
         for line in myFile.readlines():
-            line = line.split(':')
+            line = line.split('-')
 
             # Input verification check
-            if(len(line) != 2):
+            if(len(line) != 3):
                 print('ERROR READING IN STUDENT HISTORY DATABASE')
                 return
 
@@ -77,6 +77,7 @@ def verfifyStudent():
             PUID = PUID[2]
         except IndexError:
             print('ERROR READING CARD')
+            PUID = '' # Your while loop is running when PUID is empty --> Need to reset to prevent continuing to next part even though the swipe failed because it still produces something
         PUID = PUID[1:]
         if PUID == 'exit':
             print('Exit Success')
@@ -96,7 +97,19 @@ def verfifyStudent():
             print("Swipe Count: %d\n" % studentDB[PUID].count)
             # Add visit information to transcript log
             with open('checkout_logs.txt', 'a') as myFile:
-                myFile.writelines(PUID+":"+str(count)+":"+current_time+'\n')
+                myFile.writelines(PUID+"-"+str(count)+"-"+current_time+'\n')
+            with open('checkout_puid.txt', 'a') as myFile:
+                myFile.writelines(PUID+'\n')
+            with open('checkout_time.txt', 'a') as myFile:
+                myFile.writelines(current_time+'\n')
+            # Opening previous logs with PUID, num checkin, and time checkin
+            with open('checkin_logs.txt', 'r') as logs:
+                for line in logs.readlines():
+                    # Finding check in time based on PUID
+                    if (line.split('-')[0] == PUID):
+                        # Write the time difference to file
+                        with open('checkout_difference.txt', 'a') as myFile:
+                            myFile.writelines(f'{PUID}-{str(datetime.strptime(current_time, "%H:%M:%S") - datetime.strptime(line.split("-")[2][:-2], "%H:%M:%S"))}')
     # New Student visitor, verify ECE student and add to transcript
     else:
         if PUID in ECEStudents:
@@ -105,7 +118,11 @@ def verfifyStudent():
             print("Check-In Time :",current_time)
             print("Swipe Count: %d\n" % studentDB[PUID].count)
             with open('checkin_logs.txt', 'a') as myFile:
-                myFile.writelines(PUID+":"+"1"+":"+current_time+'\n')
+                myFile.writelines(PUID+"-"+"1"+"-"+current_time+'\n')
+            with open('checkin_puid.txt', 'a') as myFile:
+                myFile.writelines(PUID+'\n')
+            with open('checkin_time.txt', 'a') as myFile:
+                myFile.writelines(current_time+'\n')
         else:
             print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!NOT AN ECE STUDENT!!!")
 
