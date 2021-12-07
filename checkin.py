@@ -19,7 +19,7 @@ COUNT_LIMIT = 1
 STUDENT_ID_FILE = 'verification.txt'
 
 # Visit Logs
-VISITATION_LOG_FILE = 'checkin_logs.txt'
+VISITATION_LOG_FILE = 'checkout_logs.txt'
 
 
 # Data Structures
@@ -31,14 +31,14 @@ class student:
 #Import Student ID's from verification file
 
 def initialize():
-    print('Populating ECE student data from verification.txt ...')
+    print('Reading the Database...')
 
     # Load ECE student IDs from file
     with open(STUDENT_ID_FILE, 'r') as myFile:
         for line in myFile.readlines():
             ECEStudents.append(line.strip())
 
-    print('Populating student visit history from ECESnackTime.txt ...')
+    print('Validating visit history...')
     # Load visit transcript file - populate student dictionary
     with open(VISITATION_LOG_FILE, 'r') as myFile:
         for line in myFile.readlines():
@@ -82,34 +82,32 @@ def verfifyStudent():
             print('Exit Success')
             exit(0)
     print(studentDB.keys())
-    # Check if student has visited before
+        # Check if student has visited before
     if PUID in studentDB.keys():
         # Verify visit is valid
-        if studentDB[PUID].count >= 1:
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-Out Successful!\n")
-            print("Check-Out Time",current_time)
-            with open('checkout_logs.txt', 'a') as myFile:
-                myFile.writelines(PUID+":"+current_time+'\n')
+        if studentDB[PUID].count >= 2:
+            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!Already Checked-Out!!!\n")
+            print("Swipe Count More Than %d\n" % studentDB[PUID].count)
         else:
             studentDB[PUID].count += 1
             count = studentDB[PUID].count
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-In Successful")
-            print("Check-In Time",current_time)
+            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-Out Successful!")
+            print("Check-Out Time :",current_time)
+            print("Swipe Count: %d\n" % studentDB[PUID].count)
             # Add visit information to transcript log
-            with open('checkin_time.txt', 'a') as myFile:
-                myFile.writelines(PUID+":"+current_time+'\n')
+            with open('checkout_logs.txt', 'a') as myFile:
+                myFile.writelines(PUID+":"+str(count)+":"+current_time+'\n')
     # New Student visitor, verify ECE student and add to transcript
     else:
         if PUID in ECEStudents:
             studentDB[PUID] = student(PUID)
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-In Successful")
-            print("Check-In Time",current_time)
+            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-In Successful!")
+            print("Check-In Time :",current_time)
+            print("Swipe Count: %d\n" % studentDB[PUID].count)
             with open('checkin_logs.txt', 'a') as myFile:
-                myFile.writelines(PUID+":"+current_time+'\n')
+                myFile.writelines(PUID+":"+"1"+":"+current_time+'\n')
         else:
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNOT AN ECE STUDENT USE QR CODE")
-
-
+            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!NOT AN ECE STUDENT!!!")
 
 if __name__ == "__main__":
     # Establish Data Structures

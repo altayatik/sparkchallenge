@@ -3,4 +3,5 @@ check-in:
 check-out:
 	python3 checkout.py
 clean:
-	/bin/rm checkin_logs.txt
+	/bin/rm -f checkin_logs.txt
+	/bin/rm -f checkout_logs.txt
