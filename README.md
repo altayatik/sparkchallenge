@@ -1,5 +1,6 @@
 # The Spark Challenge Student Check-In/Out Tracking Script
 This Python Script uses the Student ID Database to match the entries with the ID Card Swipe and records the entries and swipe times.
+Big thanks to Claire Poukey!!
 
 >The verification file is not included in this repository since
 >it includes sensitive and confidential information about students

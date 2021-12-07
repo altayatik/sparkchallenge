@@ -109,7 +109,7 @@ def verfifyStudent():
                     if (line.split('-')[0] == PUID):
                         # Write the time difference to file
                         with open('checkout_difference.txt', 'a') as myFile:
-                            myFile.writelines(f'{PUID}-{str(datetime.strptime(current_time, "%H:%M:%S") - datetime.strptime(line.split("-")[2][:-2], "%H:%M:%S"))}')
+                            myFile.writelines(f'{PUID}-{str(datetime.strptime(current_time, "%H:%M:%S") - datetime.strptime(line.split("-")[2][:-2], "%H:%M:%S"))}\n')
     # New Student visitor, verify ECE student and add to transcript
     else:
         if PUID in ECEStudents:
