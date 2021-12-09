@@ -24,4 +24,3 @@ print(f'Checkin Time: {checkinTime}\nCheckout Time: {checkoutTime}\n')
 # Calculate difference between checkout time and check in time
 diff = checkoutTime - checkinTime
 print(f'Difference: {diff}')
-
