@@ -5,6 +5,9 @@ This Python Script uses the Student ID Database to match the entries with the ID
 >The verification file is not included in this repository since
 >it includes sensitive and confidential information about students
 
+>Example Test String : ;000000000=2229=0012372676=02?
+>You have to create a text file `verification.txt` with the string 0012372676
+
 What Do You Need To Run This Script?
 ==============
 * Python3
