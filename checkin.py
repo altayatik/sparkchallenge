@@ -10,7 +10,7 @@ from datetime import date, datetime
 
 # Time Check
 # now = datetime.now()
-# current_time = now.strftime("%H:%M:%S")
+# current_time = now.strftime(TIME_FORMAT)
 
 # Visit Limit
 COUNT_LIMIT = 1
@@ -20,6 +20,9 @@ STUDENT_ID_FILE = 'verification.txt'
 
 # Visit Logs
 VISITATION_LOG_FILE = 'checkout_logs.txt'
+
+# datetime standard format
+TIME_FORMAT = '%H:%M:%S'
 
 
 # Data Structures
@@ -73,60 +76,85 @@ def verfifyStudent():
         PUID = input('Swipe PUID...')
         PUID = PUID.strip()
         PUID = PUID.split('=')
+
         try:
             PUID = PUID[2]
         except IndexError:
             print('ERROR READING CARD')
             PUID = '' # Your while loop is running when PUID is empty --> Need to reset to prevent continuing to next part even though the swipe failed because it still produces something
+        
         PUID = PUID[1:]
         if PUID == 'exit':
             print('Exit Success')
             exit(0)
+
     print(studentDB.keys())
-        # Check if student has visited before
+    # Check if student has visited before
     if PUID in studentDB.keys():
         # Verify visit is valid
         if studentDB[PUID].count >= 2:
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!Already Checked-Out!!!\n")
-            print("Swipe Count More Than %d\n" % studentDB[PUID].count)
+            print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!Already Checked-Out!!!\n')
+            print(f'Swipe Count More Than {studentDB[PUID].count}\n')
         else:
             studentDB[PUID].count += 1
             count = studentDB[PUID].count
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-Out Successful!")
-            print("Check-Out Time :",datetime.now().strftime("%H:%M:%S"))
-            print("Swipe Count : %d" % studentDB[PUID].count)
+            print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-Out Successful!')
+            print(f'Swipe Count: {studentDB[PUID].count}')
+
+            checkoutTime = datetime.now().strftime(TIME_FORMAT)
+            print(f'\nCheckout Time: {checkoutTime}')
+            
+            # Converts to datetime object
+            checkoutTime = datetime.strptime(checkoutTime, TIME_FORMAT)
             
             # Add visit information to transcript log
             with open('checkout_logs.txt', 'a') as myFile:
-                myFile.writelines(PUID+"-"+str(count)+"-"+datetime.now().strftime("%H:%M:%S")+'\n')
+                myFile.writelines(f'{PUID}-{count}-{datetime.now().strftime(TIME_FORMAT)}\n')
+
             with open('checkout_puid.txt', 'a') as myFile:
-                myFile.writelines(PUID+'\n')
+                myFile.writelines(f'{PUID}\n')
+
             with open('checkout_time.txt', 'a') as myFile:
-                myFile.writelines(datetime.now().strftime("%H:%M:%S")+'\n')
+                myFile.writelines(f'{checkoutTime}\n')
+
             # Opening previous logs with PUID, num checkin, and time checkin
             with open('checkin_logs.txt', 'r') as logs:
                 for line in logs.readlines():
                     # Finding check in time based on PUID
                     if (line.split('-')[0] == PUID):
+                        checkinTime = line.split('-')[2][:-2] # The [:-2] ignores the last two characters "\n"
+                        print(f'Checkin Time: {checkinTime}')
+
+                        # Converts to datetime object
+                        checkinTime = datetime.strptime(checkinTime, TIME_FORMAT)
+
+                        # Calculates difference between checkout time and check in time
+                        diff = checkoutTime - checkinTime
+                        print(f'Time Stayed: {diff}')
+
                         # Write the time difference to file
                         with open('checkout_difference.txt', 'a') as myFile:
-                            myFile.writelines(f'{PUID}-{str(datetime.strptime(datetime.now().strftime("%H:%M:%S"), "%H:%M:%S") - datetime.strptime(line.split("-")[2][:-2], "%H:%M:%S"))}\n')
-                            print("Time Stayed : ", str(datetime.strptime(datetime.now().strftime("%H:%M:%S"), "%H:%M:%S") - datetime.strptime(line.split("-")[2][:-2], "%H:%M:%S")))
+                            myFile.writelines(f'{PUID}-{str(diff)}\n')
     # New Student visitor, verify ECE student and add to transcript
     else:
         if PUID in ECEStudents:
+            checkinTime = datetime.now().strftime(TIME_FORMAT)
             studentDB[PUID] = student(PUID)
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-In Successful!")
-            print("Check-In Time : ",datetime.now().strftime("%H:%M:%S"))
-            print("Swipe Count : %d\n" % studentDB[PUID].count)
+
+            print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-In Successful!')
+            print(f'Check-In Time : {checkinTime}')
+            print(f'Swipe Count : {studentDB[PUID].count}\n')
+
             with open('checkin_logs.txt', 'a') as myFile:
-                myFile.writelines(PUID+"-"+"1"+"-"+datetime.now().strftime("%H:%M:%S")+'\n')
+                myFile.writelines(f'{PUID}-1-{checkinTime}\n')
+
             with open('checkin_puid.txt', 'a') as myFile:
-                myFile.writelines(PUID+'\n')
+                myFile.writelines(f'{PUID}\n')
+
             with open('checkin_time.txt', 'a') as myFile:
-                myFile.writelines(datetime.now().strftime("%H:%M:%S")+'\n')
+                myFile.writelines(f'{checkinTime}\n')
         else:
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!NOT AN ECE STUDENT!!!")
+            print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!NOT AN ECE STUDENT!!!')
 
 if __name__ == "__main__":
     # Establish Data Structures
@@ -137,8 +165,7 @@ if __name__ == "__main__":
     print('Spark Check-In Script Initalizing')
     initialize()
 
-    print("System initialized successfully. Type exit to halt program safely.\n\n")
+    print('System initialized successfully. Type exit to halt program safely.\n\n')
     # Begin program
     while(True):
         response = verfifyStudent()
-
