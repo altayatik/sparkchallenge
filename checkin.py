@@ -53,7 +53,7 @@ def initialize():
                 return
 
             #Extract information from line
-            [PUID, count] = line
+            [PUID, count, time] = line
 
             if PUID in studentDB.keys():
                 # Student previously added - UPDATE COUNT
@@ -122,7 +122,7 @@ def verfifyStudent():
                 for line in logs.readlines():
                     # Finding check in time based on PUID
                     if (line.split('-')[0] == PUID):
-                        checkinTime = line.split('-')[2][:-2] # The [:-2] ignores the last two characters "\n"
+                        checkinTime = line.split('-')[2][:-1] # The [:-2] ignores the last two characters "\n"
                         print(f'Checkin Time: {checkinTime}')
 
                         # Converts to datetime object
