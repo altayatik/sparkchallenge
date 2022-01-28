@@ -1,4 +1,5 @@
 # The Spark Challenge Student Check-In/Out Tracking Script
+[![license](https://img.shields.io/badge/license-APGL--3.0-brightgreen?style=flat-square)](https://github.com/altayatik/sparkchallenge/blob/main/LICENSE)  
 This Python Script uses the Student ID Database to match the entries with the ID Card Swipe and records the entries and swipe times.
 >Big thanks to Claire Poukey!!
 
@@ -52,4 +53,8 @@ Things to be Careful About:
 Things That Still Need Attention:
 ------------------------
 1. Nothing. (To be updated)
+
+License
+------------------------
+This script is protected by GNU Affero General Public License v3.0. and The Copyright Law of the United States (Title 17). For details and legal information visit LICENSE.
 
