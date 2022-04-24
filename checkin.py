@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import *
 
 # The Spark Challenge Fall 2021
 # Student Check-In Validation and Tracking
@@ -83,7 +83,10 @@ def verfifyStudent():
             print('ERROR READING CARD')
             PUID = '' # Your while loop is running when PUID is empty --> Need to reset to prevent continuing to next part even though the swipe failed because it still produces something
         
-        PUID = PUID[1:]
+        #PUID = PUID[1:] #commented out so I don't have to go brain damage mode to input my stuff and test
+        #uncomment the following ^ line based on verification file: PUID = PUID[1:] if verification file is in the format:
+        # 12312312 as opposed to 0012312312
+
         if PUID == 'exit':
             print('Exit Success')
             exit(0)
@@ -96,45 +99,67 @@ def verfifyStudent():
             print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!Already Checked-Out!!!\n')
             print(f'Swipe Count More Than {studentDB[PUID].count}\n')
         else:
-            studentDB[PUID].count += 1
-            count = studentDB[PUID].count
-            print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-Out Successful!')
-            print(f'Swipe Count: {studentDB[PUID].count}')
+            #Add Vivek's code here after checking with altay
+            #if time <30 mins, send a print statement that asks if they are sure they want to check out
+            #If response == no|NO|No|nO or whatever, break, do not execute the rest of the loop
+            #Else respnse == YESSIR IDGAF ABOUT MY GRADE, excecute the below statement
+            #checkout() should be its own helper function rather than a subfunction of checkin.py
+            #Is this the checkout?
 
-            checkoutTime = datetime.now().strftime(TIME_FORMAT)
-            print(f'\nCheckout Time: {checkoutTime}')
-            
-            # Converts to datetime object
-            checkoutTime = datetime.strptime(checkoutTime, TIME_FORMAT)
-            
-            # Add visit information to transcript log
-            with open('checkout_logs.txt', 'a') as myFile:
-                myFile.writelines(f'{PUID}-{count}-{datetime.now().strftime(TIME_FORMAT)}\n')
-
-            with open('checkout_puid.txt', 'a') as myFile:
-                myFile.writelines(f'{PUID}\n')
-
-            with open('checkout_time.txt', 'a') as myFile:
-                myFile.writelines(f'{checkoutTime}\n')
-
-            # Opening previous logs with PUID, num checkin, and time checkin
+            ##Gets the amount of time the student has been there
             with open('checkin_logs.txt', 'r') as logs:
                 for line in logs.readlines():
                     # Finding check in time based on PUID
                     if (line.split('-')[0] == PUID):
-                        checkinTime = line.split('-')[2][:-1] # The [:-2] ignores the last two characters "\n"
-                        print(f'Checkin Time: {checkinTime}')
+                        checkinTime = line.split('-')[2][:-1]
+            checkoutTime = datetime.now().strftime(TIME_FORMAT)
+            checkoutTime = datetime.strptime(checkoutTime, TIME_FORMAT)
+            checkinTime = datetime.strptime(checkinTime, TIME_FORMAT)
+            diff = checkoutTime - checkinTime
 
-                        # Converts to datetime object
-                        checkinTime = datetime.strptime(checkinTime, TIME_FORMAT)
+            if diff.total_seconds() > 1800: #If the student has been there for more than 30(1800s) minutes, they can checkout
+                studentDB[PUID].count += 1
+                count = studentDB[PUID].count
+                print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck-Out Successful!')
+                print(f'Swipe Count: {studentDB[PUID].count}')
 
-                        # Calculates difference between checkout time and check in time
-                        diff = checkoutTime - checkinTime
-                        print(f'Time Stayed: {diff}')
+                checkoutTime = datetime.now().strftime(TIME_FORMAT)
+                print(f'\nCheckout Time: {checkoutTime}')
+                
+                # Converts to datetime object
+                checkoutTime = datetime.strptime(checkoutTime, TIME_FORMAT)
+                
+                # Add visit information to transcript log
+                with open('checkout_logs.txt', 'a') as myFile:
+                    myFile.writelines(f'{PUID}-{count}-{datetime.now().strftime(TIME_FORMAT)}\n')
 
-                        # Write the time difference to file
-                        with open('checkout_difference.txt', 'a') as myFile:
-                            myFile.writelines(f'{PUID}-{str(diff)}\n')
+                with open('checkout_puid.txt', 'a') as myFile:
+                    myFile.writelines(f'{PUID}\n')
+
+                with open('checkout_time.txt', 'a') as myFile:
+                    myFile.writelines(f'{checkoutTime}\n')
+
+                # Opening previous logs with PUID, num checkin, and time checkin
+                with open('checkin_logs.txt', 'r') as logs:
+                    for line in logs.readlines():
+                        # Finding check in time based on PUID
+                        if (line.split('-')[0] == PUID):
+                            checkinTime = line.split('-')[2][:-1] # The [:-2] ignores the last two characters "\n"
+                            print(f'Checkin Time: {checkinTime}')
+
+                            # Converts to datetime object
+                            checkinTime = datetime.strptime(checkinTime, TIME_FORMAT)
+
+                            # Calculates difference between checkout time and check in time
+                            diff = checkoutTime - checkinTime
+                            print(f'Time Stayed: {diff}')
+
+                            # Write the time difference to file
+                            with open('checkout_difference.txt', 'a') as myFile:
+                                myFile.writelines(f'{PUID}-{str(diff)}\n')
+            else: #Print saying what conditions are not met
+                print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n30 minutes have not elapsed yet.\nTime left till 30 minutes have elapsed:", (int)(30 - diff.total_seconds()/60))
+            
     # New Student visitor, verify ECE student and add to transcript
     else:
         if PUID in ECEStudents:
