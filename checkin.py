@@ -65,6 +65,28 @@ def initialize():
                 studentDB[PUID.strip()] = newstudent
                 studentDB[PUID].count = int(count)
 
+    #populates the student list with checkin_puid.txt
+    with open("checkin_logs.txt", 'r') as myFile:
+        for line in myFile.readlines():
+            line = line.split('-')
+
+            # Input verification check
+            if(len(line) != 3):
+                print('ERROR READING IN STUDENT HISTORY DATABASE')
+                return
+            #Extract information from line
+            [PUID, count, time] = line
+
+            if PUID in studentDB.keys():
+                # Student previously added - UPDATE COUNT
+                if int(count) > studentDB[PUID].count:
+                    studentDB[PUID].count = int(count)
+            else:
+                # New Student, add to dictionary
+                newstudent = student(PUID.strip())
+                studentDB[PUID.strip()] = newstudent
+                studentDB[PUID].count = int(count)
+
     print(studentDB.keys);
 
 def verfifyStudent():
@@ -83,7 +105,7 @@ def verfifyStudent():
             print('ERROR READING CARD')
             PUID = '' # Your while loop is running when PUID is empty --> Need to reset to prevent continuing to next part even though the swipe failed because it still produces something
         
-        #PUID = PUID[1:] #commented out so I don't have to go brain damage mode to input my stuff and test
+        PUID = PUID[1:] #commented out so I don't have to go brain damage mode to input my stuff and test
         #uncomment the following ^ line based on verification file: PUID = PUID[1:] if verification file is in the format:
         # 12312312 as opposed to 0012312312
 
