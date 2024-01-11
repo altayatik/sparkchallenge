@@ -4,6 +4,12 @@ import os
 from os import system
 
 path = "./Registration Data.xlsx"
+PUID_row = "A"
+name_row = "B"
+course_row = "C"
+team_row = "D"
+table_row = "E"
+date_row = "F"
 check_in_row = "G"
 check_out_row = "H"
 difference_in_time_row = "I"
